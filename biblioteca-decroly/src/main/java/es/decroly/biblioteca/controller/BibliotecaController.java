@@ -1,4 +1,32 @@
 package es.decroly.biblioteca.controller;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/biblioteca")
 public class BibliotecaController {
+
+    @Value("${biblioteca.nombre}")
+    private String nombre;
+
+    @Value("${biblioteca.max-prestamos}")
+    private int maxPrestamos;
+
+    @Value("${biblioteca.dias-prestamo}")
+    private int diasPrestamo;
+
+    @GetMapping("/info")
+    public ResponseEntity<Map<String, Object>> info() {
+        return ResponseEntity.ok(Map.of(
+                "nombre", nombre,
+                "maxPrestamos", maxPrestamos,
+                "diasPrestamo", diasPrestamo
+        ));
+    }
 }

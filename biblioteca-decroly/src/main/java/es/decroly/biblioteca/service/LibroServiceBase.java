@@ -29,6 +29,7 @@ public abstract class LibroServiceBase implements LibroService {
         this.contadorId.set(maxId);
     }
 
+
     @Override
     public Libro listarLibro(Long id){
         return (Libro) this.libros;
