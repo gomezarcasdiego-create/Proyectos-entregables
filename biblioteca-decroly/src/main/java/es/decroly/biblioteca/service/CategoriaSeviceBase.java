@@ -1,10 +1,14 @@
 package es.decroly.biblioteca.service;
 
+import es.decroly.biblioteca.exception.BadRequestException;
+import es.decroly.biblioteca.exception.ConflictException;
 import es.decroly.biblioteca.model.Categoria;
 import lombok.extern.slf4j.Slf4j;
+import es.decroly.biblioteca.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -13,16 +17,17 @@ public abstract class CategoriaSeviceBase implements CategoriaService {
     private List<Categoria> categorias;
     private final AtomicLong secuencia;
 
-    public CategoriaSeviceBase(List<Categoria> Categorias) {
-        this.categorias = new ArrayList(categorias);
+    public CategoriaSeviceBase(List<Categoria> categorias) {
+        this.categorias = new ArrayList<>(categorias);
+
         long maxId = 0;
-        for (Categoria p : categorias) {
-            if (p.getId() > maxId) {
-                maxId = p.getId();
+        for (Categoria categoria : this.categorias) {
+            if (categoria.getId() > maxId) {
+                maxId = categoria.getId();
             }
         }
-        this.secuencia = new AtomicLong(maxId);
 
+        this.secuencia = new AtomicLong(maxId);
     }
 
     @Override
@@ -35,11 +40,12 @@ public abstract class CategoriaSeviceBase implements CategoriaService {
         return categorias.stream()
                 .filter(c -> c.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada" + id));
+                .orElseThrow(() -> new NotFoundException("Categoría no encontrada: " + id));
     }
 
     @Override
     public Categoria crearCategoria(Categoria categoria) {
+        validar(categoria);
         Long id = categoria.getId();
         Categoria nueva = new Categoria(id, categoria.getNombre(), categoria.getDescripcion());
         categorias.add(categoria);
@@ -48,11 +54,9 @@ public abstract class CategoriaSeviceBase implements CategoriaService {
 
     @Override
     public Categoria eliminarCategoria(Long id) {
-        boolean existe = categorias.stream().anyMatch(c -> c.getId().equals(id));
-        if (!existe) {
-            throw new RuntimeException("Categoria no encontrada" + id);
-        }
-        return null;
+        Categoria categoria = buscarCategoriaPorId(id);
+        categorias.remove(categoria);
+        return categoria;
     }
 
     @Override
@@ -61,5 +65,17 @@ public abstract class CategoriaSeviceBase implements CategoriaService {
         categoriaActualizada.setNombre(categoria.getNombre());
         categoriaActualizada.setDescripcion(categoria.getDescripcion());
         return categoriaActualizada;
+    }
+
+    private void validar(Categoria categoria) {
+        if (categoria == null
+                || categoria.getNombre() == null
+                || categoria.getNombre().isBlank()) {
+            throw new BadRequestException("El nombre de la categoría es obligatorio");
+        }
+
+        if (categoria.getNombre().trim().length() > 50) {
+            throw new BadRequestException("El nombre no puede superar 50 caracteres");
+        }
     }
 }

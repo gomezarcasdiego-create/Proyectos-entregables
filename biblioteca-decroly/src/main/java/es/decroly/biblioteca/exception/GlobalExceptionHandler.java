@@ -23,4 +23,13 @@ public class GlobalExceptionHandler {
         problema.setTitle("Recurso no encontrado");
         return problema;
     }
+
+    @ExceptionHandler(ConflictException.class)
+    public ProblemDetail conflict(ConflictException ex){
+        ProblemDetail problema = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problema.setTitle("Recurso no encontrado");
+        return problema;
+
+    }
 }

@@ -4,6 +4,7 @@ import ch.qos.logback.core.util.COWArrayList;
 import es.decroly.biblioteca.dto.LibroPeticionDto;
 import es.decroly.biblioteca.exception.NotFoundException;
 import es.decroly.biblioteca.model.Libro;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -11,12 +12,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Slf4j
 
 public abstract class LibroServiceBase implements LibroService {
 
-    private List<Libro> libros = new ArrayList<>();
-    private final AtomicLong contadorId = new AtomicLong(1);
+    private ArrayList<Libro> libros = new ArrayList<>();
+    private final AtomicLong contadorId = new AtomicLong(6);
 
     public LibroServiceBase(List<Libro> libros) {
         this.libros = new ArrayList<>(libros);
@@ -26,13 +28,16 @@ public abstract class LibroServiceBase implements LibroService {
                 maxId = l.getId();
         }
 
-        this.contadorId.set(maxId);
+        this.contadorId.set(maxId + 1);
     }
 
 
     @Override
-    public Libro listarLibro(Long id){
-        return (Libro) this.libros;
+    public Libro listarLibro(Long id) {
+        return libros.stream()
+                .filter(libro -> libro.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -59,8 +64,13 @@ public abstract class LibroServiceBase implements LibroService {
 
     @Override
     public List<Libro> listarLibrosDeAutor(String autor) {
+        if (autor == null || autor.isBlank()) {
+            return new ArrayList<>(libros);
+        }
+
         return libros.stream()
-                .filter(l -> l.getAutor().equalsIgnoreCase(autor))
+                .filter(libro -> libro.getAutor() != null
+                        && libro.getAutor().equalsIgnoreCase(autor))
                 .collect(Collectors.toList());
     }
 
@@ -68,8 +78,10 @@ public abstract class LibroServiceBase implements LibroService {
     public Libro crear(LibroPeticionDto dto) {
         Libro libro = new Libro();
         libro.setId(contadorId.getAndIncrement());
+        libro.setIsbn(dto.getIsbn());
         libro.setTitulo(dto.getTitulo());
         libro.setAutor(dto.getAutor());
+        libro.setAnioPublicacion(dto.getAnioPublicacion());
         libro.setCategoriaId(dto.getCategoriaId());
         libro.setDisponible(true);
         libros.add(libro);
@@ -85,7 +97,14 @@ public abstract class LibroServiceBase implements LibroService {
         libro.setTitulo(dto.getTitulo());
         libro.setAutor(dto.getAutor());
         libro.setCategoriaId(dto.getCategoriaId());
+        libro.setDisponibles(dto.getDisponibles());
+        libro.setEjemplares(dto.getEjemplares());
+        libro.setIsbn(dto.getIsbn());
+        libro.setTitulo(dto.getTitulo());
+        libro.setAutor(dto.getAutor());
+        libro.setAnioPublicacion(dto.getAnioPublicacion());
         return libro;
+
     }
 
     @Override

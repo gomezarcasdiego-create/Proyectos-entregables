@@ -1,16 +1,17 @@
-package ServiceMemoria;
+package es.decroly.biblioteca.service;
 
-import es.decroly.biblioteca.dto.LibroPeticionDto;
 import es.decroly.biblioteca.model.Libro;
-import es.decroly.biblioteca.service.LibroServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class LibroServiceMemoria extends LibroServiceImpl {
+public class LibroServiceMemoria extends LibroServiceBase {
     public LibroServiceMemoria() {
-        super(List.of(new Libro(1L, "9788408172174", "El principito",
+        super(new ArrayList <>( List.of(
+
+                (new Libro(1L, "9788408172174", "El principito",
                         "Antoine de Saint-Exupéry", 1943, 5, 5, 1L)),
 
                 (new Libro(2L, "9788497593793", "La sombra del viento",
@@ -23,10 +24,7 @@ public class LibroServiceMemoria extends LibroServiceImpl {
                         "Gabriel García Márquez", 1967, 2, 2, 1L)),
 
                 (new Libro(5L, "9788498383621", "Juego de tronos",
-                        "George R. R. Martin", 1996, 6, 6, 2L)));
+                        "George R. R. Martin", 1996, 6, 6, 2L)))));
 
     }
-
-
-
 }

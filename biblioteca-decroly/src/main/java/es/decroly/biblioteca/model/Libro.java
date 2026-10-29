@@ -12,16 +12,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Libro{
     private Long id;
-    private String isdn;
+    private String isbn;
     private String titulo;
     private String autor;
-    private Integer anioPublicacion;
+    private int anioPublicacion;
     private int ejemplares;
     private int disponibles;
     private Long categoriaId;
 
     public boolean isDisponible() {
-        return false;
+        return disponibles > 0;
     }
 
     public void setDisponible(boolean b) {
