@@ -2,6 +2,7 @@ package es.decroly.biblioteca.service;
 
 import es.decroly.biblioteca.dto.LibroPeticionDto;
 import es.decroly.biblioteca.exception.BadRequestException;
+import es.decroly.biblioteca.exception.ConflictException;
 import es.decroly.biblioteca.exception.NotFoundException;
 import es.decroly.biblioteca.model.Libro;
 
@@ -58,6 +59,7 @@ public interface LibroService {
      * @param libro datos del libro que se va a crear
      * @return libro creado
      * @throws BadRequestException si los datos del libro no son válidos
+     * @throws ConflictException si ya existe un libro con ese ISBN
      */
     Libro crear(LibroPeticionDto libro);
 
@@ -68,6 +70,7 @@ public interface LibroService {
      * @param libro nuevos datos del libro
      * @return libro actualizado o null si no existe
      * @throws BadRequestException si los datos del libro no son válidos
+     * @throws ConflictException si otro libro ya tiene ese ISBN
      */
     Libro modificar(Long id, LibroPeticionDto libro);
 

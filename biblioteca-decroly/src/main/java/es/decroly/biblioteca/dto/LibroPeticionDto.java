@@ -26,7 +26,4 @@ public class LibroPeticionDto {
 
     @Schema(description = "Identificador de una categoría existente", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long categoriaId;
-
-    @Schema(description = "Ejemplares disponibles", example = "5", minimum = "0")
-    private int disponibles;
 }

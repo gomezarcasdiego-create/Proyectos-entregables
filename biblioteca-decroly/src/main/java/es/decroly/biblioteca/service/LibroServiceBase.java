@@ -1,27 +1,26 @@
 package es.decroly.biblioteca.service;
 
-import ch.qos.logback.core.util.COWArrayList;
 import es.decroly.biblioteca.dto.LibroPeticionDto;
+import es.decroly.biblioteca.exception.BadRequestException;
+import es.decroly.biblioteca.exception.ConflictException;
 import es.decroly.biblioteca.exception.NotFoundException;
 import es.decroly.biblioteca.model.Libro;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
-@AllArgsConstructor
-@Slf4j
 
 public abstract class LibroServiceBase implements LibroService {
 
     private ArrayList<Libro> libros = new ArrayList<>();
     private final AtomicLong contadorId = new AtomicLong(6);
+    private final CategoriaService categoriaService;
 
-    public LibroServiceBase(List<Libro> libros) {
+    public LibroServiceBase(List<Libro> libros, CategoriaService categoriaService) {
         this.libros = new ArrayList<>(libros);
+        this.categoriaService = categoriaService;
         long maxId = 0;
         for (Libro l : libros){
             if (l.getId() > maxId)
@@ -70,20 +69,54 @@ public abstract class LibroServiceBase implements LibroService {
 
         return libros.stream()
                 .filter(libro -> libro.getAutor() != null
-                        && libro.getAutor().equalsIgnoreCase(autor))
+                        && libro.getAutor().toLowerCase().contains(autor.toLowerCase()))
                 .collect(Collectors.toList());
+    }
+
+    private void validar(LibroPeticionDto dto, Long idExcluido) {
+        if (dto == null) {
+            throw new BadRequestException("Los datos del libro son obligatorios");
+        }
+        if (dto.getIsbn() == null || !dto.getIsbn().matches("[0-9]{13}")) {
+            throw new BadRequestException("El ISBN debe tener exactamente 13 cifras");
+        }
+        if (dto.getTitulo() == null || dto.getTitulo().isBlank()) {
+            throw new BadRequestException("El título es obligatorio");
+        }
+        if (dto.getAutor() == null || dto.getAutor().isBlank()) {
+            throw new BadRequestException("El autor es obligatorio");
+        }
+        if (dto.getEjemplares() < 1) {
+            throw new BadRequestException("Debe haber al menos un ejemplar");
+        }
+
+        boolean isbnDuplicado = libros.stream()
+                .anyMatch(actual -> !Objects.equals(actual.getId(), idExcluido)
+                        && dto.getIsbn().equals(actual.getIsbn()));
+        if (isbnDuplicado) {
+            throw new ConflictException("Ya existe un libro con ese ISBN");
+        }
+
+        boolean categoriaExiste = dto.getCategoriaId() != null
+                && categoriaService.listar().stream()
+                .anyMatch(categoria -> Objects.equals(categoria.getId(), dto.getCategoriaId()));
+        if (!categoriaExiste) {
+            throw new BadRequestException("La categoría indicada no existe");
+        }
     }
 
     @Override
     public Libro crear(LibroPeticionDto dto) {
+        validar(dto, null);
         Libro libro = new Libro();
         libro.setId(contadorId.getAndIncrement());
         libro.setIsbn(dto.getIsbn());
         libro.setTitulo(dto.getTitulo());
         libro.setAutor(dto.getAutor());
         libro.setAnioPublicacion(dto.getAnioPublicacion());
+        libro.setEjemplares(dto.getEjemplares());
+        libro.setDisponibles(dto.getEjemplares());
         libro.setCategoriaId(dto.getCategoriaId());
-        libro.setDisponible(true);
         libros.add(libro);
         return libro;
     }
@@ -94,15 +127,13 @@ public abstract class LibroServiceBase implements LibroService {
         if (libro == null) {
             return null;
         }
-        libro.setTitulo(dto.getTitulo());
-        libro.setAutor(dto.getAutor());
-        libro.setCategoriaId(dto.getCategoriaId());
-        libro.setDisponibles(dto.getDisponibles());
-        libro.setEjemplares(dto.getEjemplares());
+        validar(dto, id);
         libro.setIsbn(dto.getIsbn());
         libro.setTitulo(dto.getTitulo());
         libro.setAutor(dto.getAutor());
         libro.setAnioPublicacion(dto.getAnioPublicacion());
+        libro.setEjemplares(dto.getEjemplares());
+        libro.setCategoriaId(dto.getCategoriaId());
         return libro;
 
     }

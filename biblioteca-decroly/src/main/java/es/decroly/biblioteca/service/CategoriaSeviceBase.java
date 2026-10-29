@@ -45,7 +45,7 @@ public abstract class CategoriaSeviceBase implements CategoriaService {
 
     @Override
     public Categoria crearCategoria(Categoria categoria) {
-        validar(categoria);
+        validar(categoria, null);
         Long id = categoria.getId();
         Categoria nueva = new Categoria(id, categoria.getNombre(), categoria.getDescripcion());
         categorias.add(categoria);
@@ -62,12 +62,13 @@ public abstract class CategoriaSeviceBase implements CategoriaService {
     @Override
     public Categoria actualizarCategoria(Long id, Categoria categoria) {
         Categoria categoriaActualizada = buscarCategoriaPorId(id);
+        validar(categoria, id);
         categoriaActualizada.setNombre(categoria.getNombre());
         categoriaActualizada.setDescripcion(categoria.getDescripcion());
         return categoriaActualizada;
     }
 
-    private void validar(Categoria categoria) {
+    private void validar(Categoria categoria, Long idExcluido) {
         if (categoria == null
                 || categoria.getNombre() == null
                 || categoria.getNombre().isBlank()) {
@@ -76,6 +77,16 @@ public abstract class CategoriaSeviceBase implements CategoriaService {
 
         if (categoria.getNombre().trim().length() > 50) {
             throw new BadRequestException("El nombre no puede superar 50 caracteres");
+        }
+
+        String nombre = categoria.getNombre().trim();
+        boolean nombreDuplicado = categorias.stream()
+                .anyMatch(actual -> !Objects.equals(actual.getId(), idExcluido)
+                        && actual.getNombre() != null
+                        && actual.getNombre().trim().equalsIgnoreCase(nombre));
+
+        if (nombreDuplicado) {
+            throw new ConflictException("Ya existe una categoría con ese nombre");
         }
     }
 }

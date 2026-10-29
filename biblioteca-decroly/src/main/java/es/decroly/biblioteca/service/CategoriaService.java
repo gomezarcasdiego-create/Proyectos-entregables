@@ -1,6 +1,7 @@
 package es.decroly.biblioteca.service;
 
 import es.decroly.biblioteca.exception.BadRequestException;
+import es.decroly.biblioteca.exception.ConflictException;
 import es.decroly.biblioteca.exception.NotFoundException;
 import es.decroly.biblioteca.model.Categoria;
 
@@ -32,6 +33,7 @@ public interface CategoriaService {
      * @param categoria datos de la categoría que se va a crear
      * @return categoría creada
      * @throws BadRequestException si el nombre es obligatorio o supera los 50 caracteres
+     * @throws ConflictException si ya existe una categoría con ese nombre
      */
     Categoria crearCategoria(Categoria categoria);
 
@@ -43,6 +45,7 @@ public interface CategoriaService {
      * @return categoría actualizada
      * @throws NotFoundException si no existe una categoría con ese identificador
      * @throws BadRequestException si los datos de la categoría no son válidos
+     * @throws ConflictException si ya existe otra categoría con ese nombre
      */
     Categoria actualizarCategoria(Long id, Categoria categoria);
 

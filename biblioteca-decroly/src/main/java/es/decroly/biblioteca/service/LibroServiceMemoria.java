@@ -8,8 +8,8 @@ import java.util.List;
 
 @Service
 public class LibroServiceMemoria extends LibroServiceBase {
-    public LibroServiceMemoria() {
-        super(new ArrayList <>( List.of(
+    public LibroServiceMemoria(CategoriaService categoriaService) {
+        super(new ArrayList<>(List.of(
 
                 (new Libro(1L, "9788408172174", "El principito",
                         "Antoine de Saint-Exupéry", 1943, 5, 5, 1L)),
@@ -24,7 +24,7 @@ public class LibroServiceMemoria extends LibroServiceBase {
                         "Gabriel García Márquez", 1967, 2, 2, 1L)),
 
                 (new Libro(5L, "9788498383621", "Juego de tronos",
-                        "George R. R. Martin", 1996, 6, 6, 2L)))));
+                        "George R. R. Martin", 1996, 6, 6, 2L)))), categoriaService);
 
     }
 }

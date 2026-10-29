@@ -62,12 +62,23 @@
         },
         {
           "name": "Crear Categoria",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const categoria = pm.response.json();\r\npm.collectionVariables.set(\"idCategoriaCreada\", String(categoria.id));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"id\": 5,\r\n  \"nombre\": \"Aventura\",\r\n  \"descripcion\": \"Libros de aventuras\"\r\n}",
+              "raw": "{\r\n  \"nombre\": \"Aventura {{$timestamp}}\",\r\n  \"descripcion\": \"Libros de aventuras\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -96,7 +107,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"id\": 6,\r\n  \"nombre\": \"Aventura actualizada\",\r\n  \"descripcion\": \"Descripción actualizada\"\r\n}",
+              "raw": "{\r\n  \"id\": {{idCategoriaCreada}},\r\n  \"nombre\": \"Aventura actualizada {{$timestamp}}\",\r\n  \"descripcion\": \"Descripcion actualizada\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -224,6 +235,15 @@
           "request": {
             "method": "POST",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"Novela\",\r\n  \"descripcion\": \"Duplicada para comprobar error 409\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/api/categorias",
               "host": [
@@ -401,12 +421,23 @@
         },
         {
           "name": "Crear libro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const libro = pm.response.json();\r\npm.collectionVariables.set(\"idLibroCreado\", String(libro.id));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"isbn\": \"9788445000660\",\r\n  \"titulo\": \"magic\",\r\n  \"autor\": \"J. R. R. Tolkien\",\r\n  \"anioPublicacion\": \"1937\",\r\n  \"ejemplares\": 3,\r\n  \"categoriaId\": 1\r\n}",
+              "raw": "{\r\n  \"isbn\": \"978{{$timestamp}}\",\r\n  \"titulo\": \"Magic\",\r\n  \"autor\": \"J. R. R. Tolkien\",\r\n  \"anioPublicacion\": 1937,\r\n  \"ejemplares\": 3,\r\n  \"categoriaId\": 1\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -435,7 +466,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n        \"id\": 2,\r\n        \"isdn\": \"993\",\r\n        \"titulo\": \"La sombra del viento\",\r\n        \"autor\": \"Alberto Ruiz Zafón\",\r\n        \"anioPublicacion\": 2001,\r\n        \"ejemplares\": 3,\r\n        \"disponibles\": 4,\r\n        \"categoriaId\": 2,\r\n        \"disponible\": true\r\n    }",
+              "raw": "{\r\n  \"isbn\": \"9788497953793\",\r\n  \"titulo\": \"La sombra del viento\",\r\n  \"autor\": \"Alberto Ruiz Zafón\",\r\n  \"anioPublicacion\": 2001,\r\n  \"ejemplares\": 3,\r\n  \"categoriaId\": 2\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -565,7 +596,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"isbn\": \"9788408172174\",\r\n  \"titulo\": \"Libro duplicado\",\r\n  \"autor\": \"Autor de prueba\",\r\n  \"anioPublicacion\": 2020,\r\n  \"ejemplares\": 1,\r\n  \"categoriaId\": 1\r\n}",
+              "raw": "{\r\n  \"isbn\": \"9788497953793\",\r\n  \"titulo\": \"Libro duplicado\",\r\n  \"autor\": \"Autor de prueba\",\r\n  \"anioPublicacion\": 2020,\r\n  \"ejemplares\": 1,\r\n  \"categoriaId\": 2\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -603,7 +634,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "",
+              "raw": "{\r\n  \"isbn\": \"9781234567890\",\r\n  \"titulo\": \"Libro de prueba\",\r\n  \"autor\": \"Autor de prueba\",\r\n  \"anioPublicacion\": 2020,\r\n  \"ejemplares\": 1,\r\n  \"categoriaId\": 2\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -655,6 +686,65 @@
           "response": []
         }
       ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "const codigosEsperados = {\r",
+          "  \"Listar Categorias\": 200,\r",
+          "  \"Buscar Categoria Por Id\": 200,\r",
+          "  \"Crear Categoria\": 201,\r",
+          "  \"Modificar Categoria\": 200,\r",
+          "  \"Eliminar Categoria\": 204,\r",
+          "  \"Categoria inexistente\": 404,\r",
+          "  \"Nombre Obligatorio\": 400,\r",
+          "  \"Nombre duplicado\": 409,\r",
+          "  \"Modificar inexistente\": 404,\r",
+          "  \"Eliminar inexistente\": 404,\r",
+          "  \"Listar libros\": 200,\r",
+          "  \"Listar libros disponibles\": 200,\r",
+          "  \"Buscar libro por ID\": 200,\r",
+          "  \"Buscar libros por Autor\": 200,\r",
+          "  \"Crear libro\": 201,\r",
+          "  \"Modificar libro\": 200,\r",
+          "  \"Eliminar libro\": 204,\r",
+          "  \"Libro inexistente\": 404,\r",
+          "  \"Datos invalidos\": 400,\r",
+          "  \"ISBN duplicado\": 409,\r",
+          "  \"modifica inexistente\": 404,\r",
+          "  \"eliminar inexistente\": 404\r",
+          "};\r",
+          "\r",
+          "const esperado = codigosEsperados[pm.info.requestName];\r",
+          "\r",
+          "pm.test(\"Devuelve el código HTTP esperado\", function () {\r",
+          "  pm.expect(esperado, \"Falta indicar el código esperado para esta petición\").to.not.be.undefined;\r",
+          "  pm.response.to.have.status(esperado);\r",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "baseurl",
+      "value": ""
+    },
+    {
+      "key": "idCategoriaCreada",
+      "value": ""
+    },
+    {
+      "key": "idLibroCreado",
+      "value": ""
     }
   ]
 }
