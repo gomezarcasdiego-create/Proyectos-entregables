@@ -20,5 +20,5 @@ public interface ActividadService {
 
     void Eliminar(Long id);
 
-    Actividad Consultar(String nombre);
+    Actividad Info(String nombre);
 }

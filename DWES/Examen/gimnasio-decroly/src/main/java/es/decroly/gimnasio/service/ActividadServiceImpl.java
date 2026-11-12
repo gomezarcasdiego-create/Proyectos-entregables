@@ -32,7 +32,7 @@ public abstract class ActividadServiceImpl implements ActividadService {
     }
     @Override
     public List<Actividad> listar() {
-        return List.of();
+        return actividades.stream().toList();
     }
 
     @Override
@@ -46,28 +46,27 @@ public abstract class ActividadServiceImpl implements ActividadService {
     @Override
     public Actividad Crear(ActividadPeticionDto dto) {
        validar(dto, null);
-       Actividad actividad = new Actividad();
-        actividad.setId(secuencia.incrementAndGet());
-       actividad.setNombre(dto.getNombre());
-       actividad.setMonitor(dto.getMonitor());
-       actividad.setPlazas(dto.getPlazas());
-
-       actividades.add(actividad);
-       return actividad;
+       Actividad nueva = new Actividad(secuencia.incrementAndGet(),
+       dto.getNombre().trim(),
+       dto.getMonitor().trim(),
+       dto.getPlazas());
+       actividades.add(nueva);
+       return nueva;
     }
 
     @Override
     public Actividad Modificar(ActividadPeticionDto dto, Long id) {
-        Actividad actividad = listarPorId(id);
-        if (actividad == null) {
+        Actividad actualizar = listarPorId(id);
+        if (actualizar == null) {
             return null;
         }
         validar(dto, id);
-        actividad.setNombre(dto.getNombre());
-        actividad.setMonitor(dto.getMonitor());
-        actividad.setPlazas(dto.getPlazas());
+        actualizar.setNombre(dto.getNombre());
+        actualizar.setMonitor(dto.getMonitor());
+        actualizar.setPlazas(dto.getPlazas());
+        actividades.add(actualizar);
 
-        return actividad;
+        return actualizar;
     }
 
     @Override
@@ -76,7 +75,7 @@ public abstract class ActividadServiceImpl implements ActividadService {
     }
 
     @Override
-    public Actividad Consultar(String nombre) {
+    public Actividad Info(String nombre) {
         return null;
     }
 

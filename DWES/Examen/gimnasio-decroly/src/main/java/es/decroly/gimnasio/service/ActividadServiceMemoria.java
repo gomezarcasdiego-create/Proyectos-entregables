@@ -1,5 +1,6 @@
 package es.decroly.gimnasio.service;
 
+import es.decroly.gimnasio.dto.ActividadPeticionDto;
 import es.decroly.gimnasio.model.Actividad;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,11 @@ public class ActividadServiceMemoria extends ActividadServiceImpl {
 
     @Override
     public Actividad Modificar(Long id, Actividad actividad) {
+        return null;
+    }
+
+    @Override
+    public Actividad Crear(ActividadPeticionDto dto) {
         return null;
     }
 }

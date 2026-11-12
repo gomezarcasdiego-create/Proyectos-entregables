@@ -16,4 +16,7 @@ public class Actividad {
     private String monitor;
     private int plazas;
     private int plazasLibres;
+
+    public Actividad(long l, String trim, String trim1, int plazas) {
+    }
 }
