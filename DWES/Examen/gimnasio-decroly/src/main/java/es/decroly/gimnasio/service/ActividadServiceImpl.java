@@ -1,5 +1,6 @@
 package es.decroly.gimnasio.service;
 
+import es.decroly.gimnasio.dto.ActividadPeticionDto;
 import es.decroly.gimnasio.exception.BadRequestException;
 import es.decroly.gimnasio.exception.ConflictException;
 import es.decroly.gimnasio.exception.NotFoundException;
@@ -13,11 +14,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 @Slf4j
-public class ActividadServiceBase implements ActividadService {
+public abstract class ActividadServiceImpl implements ActividadService {
     private List<Actividad> actividades;
     private final AtomicLong secuencia;
 
-    public ActividadServiceBase(List<Actividad> actividades) {
+    public ActividadServiceImpl(List<Actividad> actividades) {
         this.actividades = new ArrayList<>(actividades);
 
         long maxId = 0;
@@ -43,26 +44,35 @@ public class ActividadServiceBase implements ActividadService {
     }
 
     @Override
-    public Actividad Crear(Actividad actividad) {
-        Long id = actividad.getId();
-        Actividad nueva = new Actividad(id, actividad.getNombre(), actividad.getMonitor(), actividad.getPlazas(), actividad.getPlazasLibres());
-        actividades.add(nueva);
-        return nueva;
+    public Actividad Crear(ActividadPeticionDto dto) {
+       validar(dto, null);
+       Actividad actividad = new Actividad();
+        actividad.setId(secuencia.incrementAndGet());
+       actividad.setNombre(dto.getNombre());
+       actividad.setMonitor(dto.getMonitor());
+       actividad.setPlazas(dto.getPlazas());
+
+       actividades.add(actividad);
+       return actividad;
     }
 
     @Override
-    public Actividad Modificar(Long id, Actividad actividad) {
-        Actividad actividadModificada = listarPorId(id);
-        actividad.setNombre(actividad.getNombre());
-        actividad.setMonitor(actividad.getMonitor());
-        return actividadModificada;
-    }
-
-    @Override
-    public Actividad Eliminar(Long id) {
+    public Actividad Modificar(ActividadPeticionDto dto, Long id) {
         Actividad actividad = listarPorId(id);
-        actividades.remove(actividad);
+        if (actividad == null) {
+            return null;
+        }
+        validar(dto, id);
+        actividad.setNombre(dto.getNombre());
+        actividad.setMonitor(dto.getMonitor());
+        actividad.setPlazas(dto.getPlazas());
+
         return actividad;
+    }
+
+    @Override
+    public void Eliminar(Long id) {
+        actividades.removeIf(l -> l.getId().equals(id));
     }
 
     @Override
@@ -70,7 +80,7 @@ public class ActividadServiceBase implements ActividadService {
         return null;
     }
 
-    private void validar(Actividad actividad, Long idExcluido) {
+    private void validar(ActividadPeticionDto actividad, Long idExcluido) {
         if (actividad == null
                 || actividad.getNombre() == null
                 || actividad.getNombre().isBlank()) {

@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActividadPeticionDto {
-    private Long  id;
     private String nombre;
     private String monitor;
+    private int plazas;
 }

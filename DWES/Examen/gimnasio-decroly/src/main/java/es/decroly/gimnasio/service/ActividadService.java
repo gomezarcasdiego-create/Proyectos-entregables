@@ -1,8 +1,6 @@
 package es.decroly.gimnasio.service;
 
-import es.decroly.gimnasio.exception.BadRequestException;
-import es.decroly.gimnasio.exception.ConflictException;
-import es.decroly.gimnasio.exception.NotFoundException;
+import es.decroly.gimnasio.dto.ActividadPeticionDto;
 import es.decroly.gimnasio.model.Actividad;
 
 import java.util.List;
@@ -16,7 +14,11 @@ public interface ActividadService {
 
     Actividad Modificar(Long id, Actividad actividad);
 
-    Actividad Eliminar(Long id);
+    Actividad Crear(ActividadPeticionDto dto);
+
+    Actividad Modificar(ActividadPeticionDto dto, Long id);
+
+    void Eliminar(Long id);
 
     Actividad Consultar(String nombre);
 }
