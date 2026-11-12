@@ -1,6 +1,6 @@
 package es.decroly.biblioteca.service;
 
-import es.decroly.biblioteca.model.Categoria;
+import  es.decroly.biblioteca.model.Categoria;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
