@@ -1,0 +1,45 @@
+<section class="container">
+    <h1>Insertar nuevo producto</h1>
+    <hr>
+
+    <form [formGroup]="productForm" class="card p-3 shadow" (ngSubmit)="getDataForm()">
+        <div class="my-2">
+            <label for="name" class="form-label mt-lg-3">name</label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="Introduce el nombre"
+                formControlName="name">
+        </div>
+
+        <div class="my-2">
+            <label for="description" class="form-label mt-lg-3">Description</label>
+            <input type="text" class="form-control" name="description" id="description" placeholder="Introduce la descripción"
+                formControlName="description">
+        </div>
+
+        <div class="my-2">
+            <label for="price" class="form-label mt-lg-3">Price</label>
+            <input type="number" class="form-control" name="price" id="price" placeholder="Introduce el precio"
+                formControlName="price">
+        </div>
+
+        <div class="my-2">
+            <label for="category" class="form-label mt-lg-3">Category</label>
+            <input type="text" class="form-control" name="category" id="category"
+                placeholder="Introduce la categoría" formControlName="category">
+        </div>
+
+        <div class="my-2">
+            <label for="image" class="form-label mt-lg-3">Imagen</label>
+            <input type="text" class="form-control" name="image" id="image" placeholder="Introduce el link de la imagen"
+                formControlName="image">
+        </div>
+
+        <div class="my-2">
+            <label for="active" class="form-label mt-lg-3">Active</label>
+            <input type="text" class="form-control" name="active" id="active"
+                placeholder="Introduce si está activo" formControlName="active">
+        </div>
+
+        <input type="submit" value="Guardar" class="btn btn-success mt-5" [disabled]="!productForm.valid">
+
+    </form>
+</section>

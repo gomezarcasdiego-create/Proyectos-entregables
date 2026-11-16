@@ -1,13 +1,13 @@
-package es.decroly.gimnasio;
+package com.decroly.product_apirest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GimnasioDecrolyApplication {
+public class ProductApiRestApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GimnasioDecrolyApplication.class, args);
+        SpringApplication.run(ProductApiRestApplication.class, args);
     }
 
 }
